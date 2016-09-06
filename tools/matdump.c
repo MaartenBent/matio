@@ -739,6 +739,11 @@ print_default(const matvar_t *matvar)
         case MAT_C_UINT16:
         case MAT_C_INT8:
         case MAT_C_UINT8: {
+            if ( matvar->name )
+                Mat_Message("Name: %s", matvar->name);
+            if ( matvar->rank == 2 && (matvar->dims[0] > 1 || matvar->dims[1] > 1) )
+                Mat_Message("Dims: %" SIZE_T_FMTSTR "x%" SIZE_T_FMTSTR, (unsigned)matvar->dims[0],
+                            (unsigned)matvar->dims[1]);
             if ( matvar->rank == 2 )
                 print_default_numeric_2d(matvar);
             else if ( matvar->rank == 3 )
@@ -755,10 +760,13 @@ print_default(const matvar_t *matvar)
             size_t nmemb;
 
             if ( matvar->name )
-                Mat_Message("      Name: %s", matvar->name);
-            Mat_Message("      Rank: %d", matvar->rank);
+                Mat_Message("Name: %s", matvar->name);
+            Mat_Message("Rank: %d", matvar->rank);
             if ( matvar->rank == 0 )
                 return;
+            if ( matvar->rank == 2 && (matvar->dims[0] > 1 || matvar->dims[1] > 1) )
+                Mat_Message("Dims: %" SIZE_T_FMTSTR "x%" SIZE_T_FMTSTR, (unsigned)matvar->dims[0],
+                            (unsigned)matvar->dims[1]);
             Mat_Message("Class Type: Structure");
             nfields = Mat_VarGetNumberOfFields(matvar);
             nmemb = matvar->dims[0];
@@ -766,16 +774,18 @@ print_default(const matvar_t *matvar)
                 nmemb *= matvar->dims[i];
             if ( nfields > 0 && nmemb < 1 ) {
                 char *const *fieldnames = Mat_VarGetStructFieldnames(matvar);
-                Mat_Message("Fields[%d] {", nfields);
+                Mat_Message("Fields[%d]", nfields);
+                Mat_Message("{");
                 indent++;
                 if ( NULL != fieldnames ) {
                     for ( i = 0; i < nfields; i++ )
-                        Mat_Message("    Name: %s", fieldnames[i]);
+                        Mat_Message("Name: %s", fieldnames[i]);
                 }
                 indent--;
                 Mat_Message("}");
             } else if ( nfields > 0 && nmemb > 0 ) {
-                Mat_Message("Fields[%d] {", nfields);
+                Mat_Message("Fields[%d]", nfields);
+                Mat_Message("{");
                 indent++;
                 {
                     matvar_t **fields = (matvar_t **)matvar->data;
@@ -795,8 +805,8 @@ print_default(const matvar_t *matvar)
             int i;
 
             if ( matvar->name )
-                Mat_Message("      Name: %s", matvar->name);
-            Mat_Message("      Rank: %d", matvar->rank);
+                Mat_Message("Name: %s", matvar->name);
+            Mat_Message("Rank: %d", matvar->rank);
             if ( matvar->rank == 0 )
                 return;
             ncells = matvar->dims[0];
@@ -904,10 +914,29 @@ main(int argc, char *argv[])
         return EXIT_FAILURE;
     }
 
+    Mat_Message("File: %s", Mat_GetFilename(mat));
+    switch ( Mat_GetVersion(mat) ) {
+        case MAT_FT_MAT73:
+            Mat_Message("Version: MAT7.3");
+            break;
+        case MAT_FT_MAT5:
+            Mat_Message("Version: MAT5");
+            break;
+        case MAT_FT_MAT4:
+            Mat_Message("Version: MAT4");
+            break;
+        case MAT_FT_UNDEFINED:
+            Mat_Message("Version: UNDEFINED");
+            break;
+        default:
+            Mat_Message("Version: unknown");
+            break;
+    }
+
     optind++;
 
+    int i;
     if ( optind < argc ) {
-        int i;
         /* variables specified on the command line */
         for ( i = optind; i < argc; i++ ) {
             char *next_tok_pos, next_tok = 0;
@@ -936,14 +965,45 @@ main(int argc, char *argv[])
             }
         } /* for ( i = optind; i < argc; i++ ) */
     } else {
+        i = 0;
         /* print all variables */
         if ( printdata ) {
             while ( (matvar = Mat_VarReadNext(mat)) != NULL ) {
+                if ( i == 0 ) {
+                    switch ( matvar->compression ) {
+                        case MAT_COMPRESSION_ZLIB:
+                            Mat_Message("Compression: zlib");
+                            break;
+                        case MAT_COMPRESSION_NONE:
+                            Mat_Message("Compression: none");
+                            break;
+                        default:
+                            Mat_Message("Compression: unknown");
+                            break;
+                    }
+                    Mat_Message("");
+                    ++i;
+                }
                 (*printfunc)(matvar);
                 Mat_VarFree(matvar);
             }
         } else {
             while ( (matvar = Mat_VarReadNextInfo(mat)) != NULL ) {
+                if ( i == 0 ) {
+                    switch ( matvar->compression ) {
+                        case MAT_COMPRESSION_ZLIB:
+                            Mat_Message("Compression: zlib");
+                            break;
+                        case MAT_COMPRESSION_NONE:
+                            Mat_Message("Compression: none");
+                            break;
+                        default:
+                            Mat_Message("Compression: unknown");
+                            break;
+                    }
+                    Mat_Message("");
+                    ++i;
+                }
                 (*printfunc)(matvar);
                 Mat_VarFree(matvar);
             }
