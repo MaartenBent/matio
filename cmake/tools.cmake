@@ -1,4 +1,9 @@
 add_executable(matdump ${PROJECT_SOURCE_DIR}/tools/matdump.c )
+if(MSVC)
+    set_target_properties(matdump PROPERTIES OUTPUT_NAME "matdump${NAME_SUFFIX}")
+    set_target_properties(matdump PROPERTIES DEBUG_POSTFIX "d")
+endif()
+
 target_link_libraries(matdump matio)
 if(NOT HAVE_GETOPT)
     target_link_libraries(matdump getopt)

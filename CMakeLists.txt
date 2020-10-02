@@ -9,6 +9,16 @@ project(matio
     LANGUAGES C CXX
 )
 
+if(MSVC)
+    set(HDF5_BIT "Win32")
+    set(NAME_SUFFIX "32")
+    if(CMAKE_CL_64)
+        set(HDF5_BIT "x64")
+        set(NAME_SUFFIX "64")
+    endif()
+    set(CMAKE_PREFIX_PATH "$ENV{HDF5_DIR_${HDF5_BIT}}/cmake")
+endif()
+
 string(TOUPPER ${PROJECT_NAME} PROJECT_NAME_UPPER)
 set(matio_PLATFORM ${CMAKE_SYSTEM_PROCESSOR}-pc-${CMAKE_SYSTEM_NAME})
 set(matio_PACKAGE "${PROJECT_NAME}")

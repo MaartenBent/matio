@@ -61,7 +61,8 @@ if(HAVE_LIBM)
 endif()
 
 if(MSVC)
-    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME lib${PROJECT_NAME})
+    set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME "lib${PROJECT_NAME}${NAME_SUFFIX}")
+    set_target_properties(${PROJECT_NAME} PROPERTIES DEBUG_POSTFIX "d")
 endif()
 
 if(HDF5_FOUND)
