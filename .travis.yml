@@ -2,6 +2,15 @@ language: c
 
 git:
   depth: 5
+  
+addons:
+  homebrew:
+    update: true
+    packages:
+      - zlib
+      - libtool
+      - automake
+      - hdf5
 
 matrix:
   include:
@@ -14,15 +23,7 @@ matrix:
         - WITH_ZLIB=yes
         - MAX_RANK=3
         - HDF5_VERSION=foo
-        - HOMEBREW_DEPLOY=yes
         - HOMEBREW_NO_ANALYTICS=1
-      cache:
-        directories:
-          - $HOME/Library/Caches/Homebrew
-          - /usr/local/Homebrew
-
-before_cache:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$HOMEBREW_DEPLOY" == "yes" ]]; then brew cleanup; fi
 
 before_install: ./.ci/travis_before_install.sh
 

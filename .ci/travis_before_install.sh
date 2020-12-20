@@ -15,11 +15,3 @@ if [[ "$COVERITY_SCAN_BRANCH" != 1 ]] && [[ "$TRAVIS_OS_NAME" == "linux" ]] && [
     curl https://bitbucket.org/Swyter/bitbucket-curl-upload-to-repo-downloads/raw/default/upload-to-bitbucket.sh -O -J -L
     chmod +x ./upload-to-bitbucket.sh
 fi
-
-if [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$HOMEBREW_DEPLOY" == "yes" ]]; then
-    brew update
-    brew install zlib
-    brew install libtool
-    brew install automake
-    brew upgrade hdf5
-fi
