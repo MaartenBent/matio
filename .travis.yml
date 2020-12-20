@@ -5,7 +5,7 @@ git:
   
 addons:
   homebrew:
-    update: true
+    update: false
     packages:
       - zlib
       - libtool
