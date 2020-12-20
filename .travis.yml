@@ -16,6 +16,13 @@ matrix:
         - HDF5_VERSION=foo
         - HOMEBREW_DEPLOY=yes
         - HOMEBREW_NO_ANALYTICS=1
+      cache:
+        directories:
+          - $HOME/Library/Caches/Homebrew
+          - /usr/local/Homebrew
+
+before_cache:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]] && [[ "$HOMEBREW_DEPLOY" == "yes" ]]; then brew cleanup; fi
 
 before_install: ./.ci/travis_before_install.sh
 
