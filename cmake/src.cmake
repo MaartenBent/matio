@@ -71,8 +71,20 @@ if(HAVE_LIBM)
     target_link_libraries(${PROJECT_NAME} PUBLIC m)
 endif()
 
+# function to set common propeties of targets
+function(set_common_properties target)
+    if(MSVC)
+        target_compile_definitions(${target} PRIVATE _CRT_SECURE_NO_WARNINGS)
+        set_target_properties(${target} PROPERTIES
+            COMPILE_FLAGS "/wd4267"
+            LINK_FLAGS "/ignore:4099"
+            DEBUG_POSTFIX "d"
+        )
+    endif()
+endfunction()
+
+set_common_properties(${PROJECT_NAME})
 if(MSVC)
-    add_definitions(-D_CRT_SECURE_NO_WARNINGS /wd4267)
     set_target_properties(${PROJECT_NAME} PROPERTIES OUTPUT_NAME lib${PROJECT_NAME})
 endif()
 
