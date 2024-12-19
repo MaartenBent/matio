@@ -1,5 +1,6 @@
 if(MATIO_BUILD_TESTING)
     add_executable(test_mat "${PROJECT_SOURCE_DIR}/test/test_mat.c")
+    set_common_properties(test_mat)
     target_link_libraries(test_mat matio)
     if(NOT HAVE_GETOPT)
         target_link_libraries(test_mat getopt)
